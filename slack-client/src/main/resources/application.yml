@@ -1,2 +1,4 @@
 server:
-  port: 0
+  port: 8081
+slack:
+  user: svendub

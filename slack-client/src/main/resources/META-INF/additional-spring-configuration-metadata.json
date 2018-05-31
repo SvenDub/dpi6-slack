@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "slack.user",
+      "type": "java.lang.String",
+      "description": "The username of the user using this client."
+    }
+  ]
+}

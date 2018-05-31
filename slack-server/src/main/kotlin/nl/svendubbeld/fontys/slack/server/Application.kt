@@ -1,8 +1,9 @@
 package nl.svendubbeld.fontys.slack.server
 
+import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_QUEUE
+import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
-import nl.svendubbeld.fontys.slack.shared.TOPIC_EXCHANGE
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Queue
@@ -13,8 +14,10 @@ import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
+@EnableScheduling
 class Application {
 
     @Bean
@@ -28,13 +31,18 @@ class Application {
     }
 
     @Bean
-    fun exchange(): TopicExchange {
-        return TopicExchange(TOPIC_EXCHANGE)
+    fun sendExchange(): TopicExchange {
+        return TopicExchange(SEND_EXCHANGE)
     }
 
     @Bean
-    fun binding(sendQueue: Queue, exchange: TopicExchange): Binding {
-        return BindingBuilder.bind(sendQueue).to(exchange).with("*.*")
+    fun receiveExchange(): TopicExchange {
+        return TopicExchange(RECEIVE_EXCHANGE)
+    }
+
+    @Bean
+    fun binding(sendQueue: Queue, sendExchange: TopicExchange): Binding {
+        return BindingBuilder.bind(sendQueue).to(sendExchange).with("*.*")
     }
 
     @Bean

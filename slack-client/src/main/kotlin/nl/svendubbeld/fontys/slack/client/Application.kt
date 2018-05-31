@@ -1,16 +1,22 @@
 package nl.svendubbeld.fontys.slack.client
 
+import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_QUEUE
+import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
-import nl.svendubbeld.fontys.slack.shared.TOPIC_EXCHANGE
+import org.springframework.amqp.core.Binding
+import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.rabbit.connection.ConnectionFactory
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
-class Application {
+class Application(val slackConfiguration: SlackConfiguration) {
 
     @Bean
     fun sendQueue(): Queue {
@@ -23,8 +29,32 @@ class Application {
     }
 
     @Bean
-    fun exchange(): TopicExchange {
-        return TopicExchange(TOPIC_EXCHANGE)
+    fun sendExchange(): TopicExchange {
+        return TopicExchange(SEND_EXCHANGE)
+    }
+
+    @Bean
+    fun receiveExchange(): TopicExchange {
+        return TopicExchange(RECEIVE_EXCHANGE)
+    }
+
+    @Bean
+    fun binding(receiveQueue: Queue, receiveExchange: TopicExchange): Binding {
+        return BindingBuilder.bind(receiveQueue).to(receiveExchange).with("user.${slackConfiguration.user}")
+    }
+
+    @Bean
+    fun container(connectionFactory: ConnectionFactory, listenerAdapter: MessageListenerAdapter):SimpleMessageListenerContainer {
+        val container = SimpleMessageListenerContainer()
+        container.connectionFactory = connectionFactory
+        container.setQueueNames(RECEIVE_QUEUE)
+        container.setMessageListener(listenerAdapter)
+        return container
+    }
+
+    @Bean
+    fun listenerAdapter(receiver: Receiver): MessageListenerAdapter {
+        return MessageListenerAdapter(receiver, "receiveMessage")
     }
 }
 

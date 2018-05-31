@@ -1,0 +1,27 @@
+#messages {
+    height: 500px;
+    overflow-y: scroll;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    padding: 8px;
+    width: 90%;
+}
+
+.message--received {
+    background: greenyellow;
+    margin-right: auto;
+}
+
+.message--sent {
+    background: cadetblue;
+    margin-left: auto;
+}
+
+.message__timestamp {
+    font-size: small;
+}
