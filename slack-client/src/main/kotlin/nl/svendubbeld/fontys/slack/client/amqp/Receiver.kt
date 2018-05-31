@@ -1,5 +1,6 @@
-package nl.svendubbeld.fontys.slack.client
+package nl.svendubbeld.fontys.slack.client.amqp
 
+import nl.svendubbeld.fontys.slack.client.MessageService
 import nl.svendubbeld.fontys.slack.shared.Message
 import org.springframework.stereotype.Component
 

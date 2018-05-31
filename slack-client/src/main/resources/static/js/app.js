@@ -13,7 +13,7 @@ function connect() {
   stompClient.connect({}, frame => {
     console.log('Connected: ' + frame);
     stompClient.subscribe('/topic/messages', message => {
-      addMessage(JSON.parse(message.body));
+      addMessage(JSON.parse(message.body), 'received');
     });
   });
 }
@@ -25,7 +25,17 @@ function disconnect() {
   console.log('Disconnected');
 }
 
-function addMessage(message) {
+function onSubmitMessageForm() {
+  sendMessage({message: document.querySelector('#send-message').value}, document.querySelector('#send-destination').value);
+  return false;
+}
+
+function sendMessage(message, destination) {
+  stompClient.send("/app/send", {'X-Destination': destination}, JSON.stringify(message));
+  addMessage(message, 'sent')
+}
+
+function addMessage(message, modifier) {
   const messagesEl = document.querySelector('#messages');
 
   const scrolledToBottom = messagesEl.scrollTop ===
@@ -41,7 +51,7 @@ function addMessage(message) {
   bodyEl.innerText = message.message;
 
   const rowEl = document.createElement('div');
-  rowEl.classList.add('message', 'message--received');
+  rowEl.classList.add('message', `message--${modifier}`);
   rowEl.appendChild(bodyEl);
   rowEl.appendChild(timestampEl);
 

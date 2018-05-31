@@ -1,7 +1,9 @@
 package nl.svendubbeld.fontys.slack.client
 
+import nl.svendubbeld.fontys.slack.client.amqp.Receiver
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_QUEUE
+import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
@@ -18,19 +20,16 @@ import org.springframework.context.annotation.Bean
 class Application(val slackConfiguration: SlackConfiguration) {
 
     @Bean
-    fun sendQueue(): Queue {
-        return Queue(SEND_QUEUE)
-    }
+    fun sendQueue(): Queue = Queue(SEND_QUEUE)
 
     @Bean
-    fun receiveQueue(): Queue {
-        return Queue("$RECEIVE_QUEUE.${slackConfiguration.user}")
-    }
+    fun receiveQueue(): Queue = Queue("$RECEIVE_QUEUE.${slackConfiguration.user}")
 
     @Bean
-    fun receiveExchange(): TopicExchange {
-        return TopicExchange(RECEIVE_EXCHANGE)
-    }
+    fun sendExchange(): TopicExchange = TopicExchange(SEND_EXCHANGE)
+
+    @Bean
+    fun receiveExchange(): TopicExchange = TopicExchange(RECEIVE_EXCHANGE)
 
     @Bean
     fun binding(receiveQueue: Queue, receiveExchange: TopicExchange): Binding {

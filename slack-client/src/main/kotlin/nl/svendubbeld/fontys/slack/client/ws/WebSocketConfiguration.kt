@@ -1,4 +1,4 @@
-package nl.svendubbeld.fontys.slack.client
+package nl.svendubbeld.fontys.slack.client.ws
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry

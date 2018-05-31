@@ -19,11 +19,17 @@
 
     <div id="messages">
         <!--/*@thymesVar id="messages" type="java.util.List<nl.svendubbeld.fontys.slack.shared.Message>"*/-->
-        <div class="message message--sent" th:each="message : ${messages}">
+        <div class="message message--received" th:each="message : ${messages}">
             <div th:text="${message.message}" class="message__content"></div>
             <div th:data-livestamp="${message.date}" class="message__timestamp">&nbsp;</div>
         </div>
     </div>
+
+    <form onsubmit="return onSubmitMessageForm()">
+        <label for="send-destination">Destination:</label><input id="send-destination" name="destination" type="text"/>
+        <label for="send-message">Message:</label><input id="send-message" name="message" type="text"/>
+        <button type="submit">Send</button>
+    </form>
 
 </div>
 
