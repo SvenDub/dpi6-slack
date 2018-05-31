@@ -1,6 +1,9 @@
 let stompClient = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  const messagesEl = document.querySelector('#messages');
+  messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.offsetHeight;
+
   connect();
 });
 
@@ -31,6 +34,7 @@ function addMessage(message) {
   const timestampEl = document.createElement('span');
   timestampEl.classList.add('message__timestamp');
   timestampEl.setAttribute('data-livestamp', message.date);
+  timestampEl.innerHTML = '&nbsp;';
 
   const bodyEl = document.createElement('span');
   timestampEl.classList.add('message__content');
@@ -44,22 +48,10 @@ function addMessage(message) {
   messagesEl.appendChild(rowEl);
 
   if (scrolledToBottom) {
-    const observer = new MutationObserver(() => {
-      if (messagesEl.contains(rowEl)) {
-        rowEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'end',
-          inline: 'nearest',
-        });
-        observer.disconnect();
-      }
-    });
-
-    observer.observe(messagesEl, {
-      attributes: false,
-      childList: true,
-      characterData: false,
-      subtree: true,
+    rowEl.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest',
     });
   }
 }

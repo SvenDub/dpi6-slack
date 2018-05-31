@@ -1,16 +1,16 @@
 package nl.svendubbeld.fontys.slack.server
 
+import nl.svendubbeld.fontys.slack.shared.Message
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_QUEUE
-import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
-import org.springframework.amqp.core.Binding
-import org.springframework.amqp.core.BindingBuilder
+import org.springframework.amqp.core.MessageListener
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.core.TopicExchange
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter
+import org.springframework.amqp.support.converter.MessageConverter
+import org.springframework.amqp.support.converter.SimpleMessageConverter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
@@ -31,33 +31,28 @@ class Application {
     }
 
     @Bean
-    fun sendExchange(): TopicExchange {
-        return TopicExchange(SEND_EXCHANGE)
-    }
-
-    @Bean
     fun receiveExchange(): TopicExchange {
         return TopicExchange(RECEIVE_EXCHANGE)
     }
 
     @Bean
-    fun binding(sendQueue: Queue, sendExchange: TopicExchange): Binding {
-        return BindingBuilder.bind(sendQueue).to(sendExchange).with("*.*")
-    }
-
-    @Bean
-    fun container(connectionFactory: ConnectionFactory, listenerAdapter: MessageListenerAdapter): SimpleMessageListenerContainer {
+    fun container(connectionFactory: ConnectionFactory, listener: MessageListener): SimpleMessageListenerContainer {
         val container = SimpleMessageListenerContainer()
         container.connectionFactory = connectionFactory
         container.setQueueNames(SEND_QUEUE)
-        container.setMessageListener(listenerAdapter)
+        container.setMessageListener(listener)
         return container
     }
 
     @Bean
-    fun listenerAdapter(receiver: Receiver): MessageListenerAdapter {
-        return MessageListenerAdapter(receiver, "receiveMessage")
+    fun listener(receiver: Receiver, messageConverter: MessageConverter): MessageListener = MessageListener {
+        println(it.messageProperties.receivedRoutingKey)
+        val body = messageConverter.fromMessage(it) as Message
+        println(body)
     }
+
+    @Bean
+    fun messageConverter(): MessageConverter = SimpleMessageConverter()
 }
 
 fun main(args: Array<String>) {

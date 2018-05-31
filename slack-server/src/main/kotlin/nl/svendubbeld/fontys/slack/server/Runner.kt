@@ -14,7 +14,8 @@ class Runner(val rabbitTemplate: RabbitTemplate) {
     @Scheduled(fixedRate = 10000)
     fun run() {
         println("Sending message...")
-        rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, "user.svendub", Message("Hey there $i!"))
+        rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, "user.svendub", Message("Hey there SvenDub $i!"))
+        rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, "user.other", Message("Hey there Other $i!"))
         i++
     }
 }

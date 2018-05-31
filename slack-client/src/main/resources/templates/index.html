@@ -21,7 +21,7 @@
         <!--/*@thymesVar id="messages" type="java.util.List<nl.svendubbeld.fontys.slack.shared.Message>"*/-->
         <div class="message message--sent" th:each="message : ${messages}">
             <div th:text="${message.message}" class="message__content"></div>
-            <div th:data-livestamp="${message.date}" class="message__timestamp"></div>
+            <div th:data-livestamp="${message.date}" class="message__timestamp">&nbsp;</div>
         </div>
     </div>
 
