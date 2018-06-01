@@ -7,9 +7,14 @@
     display: flex;
     flex-direction: column;
     border-radius: 2px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     padding: 8px;
     width: 90%;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: row;
 }
 
 .message--received {
@@ -17,9 +22,21 @@
     margin-right: auto;
 }
 
+.message-container--received::before {
+    content: '◀';
+    color: greenyellow;
+    align-self: flex-end;
+}
+
 .message--sent {
     background: cadetblue;
     margin-left: auto;
+}
+
+.message-container--sent::after {
+    content: '▶';
+    color: cadetblue;
+    align-self: flex-end;
 }
 
 .message__timestamp {

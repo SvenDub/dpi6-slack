@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
 @EnableScheduling
-class Application() {
+class Application {
 
     @Bean
     fun sendQueue(): Queue = Queue(SEND_QUEUE)

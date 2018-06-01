@@ -1,6 +1,9 @@
 let stompClient = null;
+let messageTemplate = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  messageTemplate = Handlebars.compile(document.getElementById("message-template").innerHTML);
+
   const messagesEl = document.querySelector('#messages');
   messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.offsetHeight;
 
@@ -13,7 +16,7 @@ function connect() {
   stompClient.connect({}, frame => {
     console.log('Connected: ' + frame);
     stompClient.subscribe('/topic/messages', message => {
-      addMessage(JSON.parse(message.body), 'received');
+      addMessage(JSON.parse(message.body));
     });
   });
 }
@@ -26,42 +29,51 @@ function disconnect() {
 }
 
 function onSubmitMessageForm() {
-  sendMessage({message: document.querySelector('#send-message').value}, document.querySelector('#send-destination').value);
+  sendMessage({content: document.querySelector('#send-message').value}, document.querySelector('#send-destination').value);
   return false;
 }
 
 function sendMessage(message, destination) {
   stompClient.send("/app/send", {'X-Destination': destination}, JSON.stringify(message));
-  addMessage(message, 'sent')
 }
 
-function addMessage(message, modifier) {
+function addMessage(message) {
   const messagesEl = document.querySelector('#messages');
 
-  const scrolledToBottom = messagesEl.scrollTop ===
-    (messagesEl.scrollHeight - messagesEl.offsetHeight);
+  const scrolledToBottom = messagesEl.scrollTop >=
+    (messagesEl.scrollHeight - messagesEl.offsetHeight - 8);
 
-  const timestampEl = document.createElement('span');
-  timestampEl.classList.add('message__timestamp');
-  timestampEl.setAttribute('data-livestamp', message.date);
-  timestampEl.innerHTML = '&nbsp;';
-
-  const bodyEl = document.createElement('span');
-  timestampEl.classList.add('message__content');
-  bodyEl.innerText = message.message;
-
-  const rowEl = document.createElement('div');
-  rowEl.classList.add('message', `message--${modifier}`);
-  rowEl.appendChild(bodyEl);
-  rowEl.appendChild(timestampEl);
-
-  messagesEl.appendChild(rowEl);
+  const element = htmlToElement(messageTemplate(message));
+  messagesEl.appendChild(element);
 
   if (scrolledToBottom) {
-    rowEl.scrollIntoView({
-      behavior: 'smooth',
+    element.scrollIntoView({
+      behavior: 'instant',
       block: 'end',
       inline: 'nearest',
     });
   }
+}
+
+/**
+ * @param {String} html HTML representing a single element.
+ * @return {Element}
+ * @see https://stackoverflow.com/a/35385518
+ */
+function htmlToElement(html) {
+  const template = document.createElement('template');
+  html = html.trim(); // Never return a text node of whitespace as the result
+  template.innerHTML = html;
+  return template.content.firstChild;
+}
+
+/**
+ * @param {String} html HTML representing any number of sibling elements.
+ * @return {NodeList}
+ * @see https://stackoverflow.com/a/35385518
+ */
+function htmlToElements(html) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template.content.childNodes;
 }

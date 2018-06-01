@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 class Receiver(val messageService: MessageService) {
 
     fun receiveMessage(message: Message) {
-        messageService.addMessage(message)
+        messageService.onReceiveMessage(message)
     }
 }

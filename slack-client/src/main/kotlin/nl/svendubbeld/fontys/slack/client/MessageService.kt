@@ -1,18 +1,19 @@
 package nl.svendubbeld.fontys.slack.client
 
+import nl.svendubbeld.fontys.slack.client.amqp.Sender
 import nl.svendubbeld.fontys.slack.shared.Message
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
 @Service
-class MessageService(val applicationEventPublisher: ApplicationEventPublisher) {
+class MessageService(val sender: Sender, val applicationEventPublisher: ApplicationEventPublisher) {
 
-    private val _messages: MutableList<Message> = mutableListOf()
-    val messages: List<Message> get() = _messages.toList()
-
-    fun addMessage(message: Message) {
-        _messages.add(message)
+    fun onReceiveMessage(message: Message) {
         applicationEventPublisher.publishEvent(MessageReceivedEvent(message))
+    }
+
+    fun sendMessage(message: Message, destination: String) {
+        sender.sendMessage(message, destination)
     }
 
 }
