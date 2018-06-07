@@ -3,6 +3,29 @@ let messageTemplate = null;
 let messagesNavTemplate = null;
 let messagesContentTemplate = null;
 
+/**
+ * This callback is displayed as a global member.
+ * @callback callbackFn
+ * @param {*} item - item
+ * @return {*} key
+ */
+
+/**
+ *
+ * @param {callbackFn} propSelector
+ * @returns {*}
+ */
+function groupBy(propSelector) {
+  return this.reduce((groups, item) => {
+    const val = propSelector(item);
+    groups[val] = groups[val] || [];
+    groups[val].push(item);
+    return groups;
+  }, {});
+}
+
+Array.prototype.groupBy = groupBy;
+
 document.addEventListener('DOMContentLoaded', () => {
   messageTemplate = Handlebars.compile(document.getElementById('message-template').innerHTML);
   messagesNavTemplate = Handlebars.compile(document.getElementById('messages-nav-template').innerHTML);
@@ -39,7 +62,7 @@ function onSubmitMessageForm(messageSelector, destination) {
 }
 
 function sendMessage(message, destination) {
-  stompClient.send("/app/send", {'X-Destination': destination}, JSON.stringify(message));
+  stompClient.send('/app/send', {'X-Destination': destination}, JSON.stringify(message));
 }
 
 function addMessage(message) {
@@ -85,15 +108,30 @@ function loadDestinations() {
   fetch('/api/destinations')
     .then(resp => resp.json())
     .then(destinations => {
-      destinations
+      const types = destinations
         .filter(destination => destination.key !== user)
-        .forEach(destination => {
-        const navElement = htmlToElement(messagesNavTemplate(destination));
-        destinationsNavEl.appendChild(navElement);
+        .groupBy(destination => destination.type);
 
-        const contentElement = htmlToElement(messagesContentTemplate(destination));
-        destinationsContentEl.appendChild(contentElement);
-      })
+      let i = 0;
+      for (const type in types) {
+        if (types.hasOwnProperty(type)) {
+          if (i !== 0) {
+            const separatorEl = document.createElement('div');
+            separatorEl.classList.add('dropdown-divider');
+            destinationsNavEl.appendChild(separatorEl)
+          }
+
+          for (const destination of types[type]) {
+            const navElement = htmlToElement(messagesNavTemplate(destination));
+            destinationsNavEl.appendChild(navElement);
+
+            const contentElement = htmlToElement(
+              messagesContentTemplate(destination));
+            destinationsContentEl.appendChild(contentElement);
+          }
+          i++;
+        }
+      }
     });
 }
 
