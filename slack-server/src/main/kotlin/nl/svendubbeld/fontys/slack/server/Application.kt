@@ -1,12 +1,13 @@
 package nl.svendubbeld.fontys.slack.server
 
-import nl.svendubbeld.fontys.slack.shared.Message
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
-import org.springframework.amqp.core.*
+import org.springframework.amqp.core.Binding
+import org.springframework.amqp.core.BindingBuilder
+import org.springframework.amqp.core.Queue
+import org.springframework.amqp.core.TopicExchange
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
-import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer
 import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.amqp.support.converter.SimpleMessageConverter
@@ -40,14 +41,6 @@ class Application {
         container.setQueueNames(SEND_QUEUE)
         container.setMessageListener(listener)
         return container
-    }
-
-    @Bean
-    fun listener(messageConverter: MessageConverter, rabbitTemplate: RabbitTemplate): MessageListener = MessageListener {
-        val message = messageConverter.fromMessage(it) as Message
-        val destination = it.messageProperties.receivedRoutingKey
-
-        rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, destination, message)
     }
 
     @Bean
