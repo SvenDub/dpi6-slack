@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.offsetHeight;
 
   connect();
+
+  loadGroups();
 });
 
 function connect() {
@@ -53,6 +55,22 @@ function addMessage(message) {
       inline: 'nearest',
     });
   }
+}
+
+function loadGroups() {
+  const groupsEl = document.querySelector('#send-destination');
+
+  fetch('/api/destinations')
+    .then(resp => resp.json())
+    .then(destinations => {
+      destinations.forEach(destination => {
+        const groupEl = document.createElement('option');
+        groupEl.value = `${destination.type}.${destination.key}`;
+        groupEl.innerText = `${destination.type}: ${destination.name}`;
+
+        groupsEl.appendChild(groupEl);
+      })
+    });
 }
 
 /**

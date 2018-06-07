@@ -1,9 +1,9 @@
 package nl.svendubbeld.fontys.slack.server
 
-import nl.svendubbeld.fontys.slack.server.entity.Group
-import nl.svendubbeld.fontys.slack.server.entity.User
-import nl.svendubbeld.fontys.slack.server.repository.GroupRepository
-import nl.svendubbeld.fontys.slack.server.repository.UserRepository
+import nl.svendubbeld.fontys.slack.shared.entity.Group
+import nl.svendubbeld.fontys.slack.shared.entity.User
+import nl.svendubbeld.fontys.slack.shared.repository.GroupRepository
+import nl.svendubbeld.fontys.slack.shared.repository.UserRepository
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component

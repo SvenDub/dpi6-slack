@@ -1,5 +1,6 @@
 package nl.svendubbeld.fontys.slack.server
 
+import nl.svendubbeld.fontys.slack.shared.LoadEntities
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
@@ -14,10 +15,9 @@ import org.springframework.amqp.support.converter.SimpleMessageConverter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
-@EnableScheduling
+@LoadEntities
 class Application {
 
     @Bean

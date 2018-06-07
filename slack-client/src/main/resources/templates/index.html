@@ -26,9 +26,15 @@
     </div>
 
     <form onsubmit="return onSubmitMessageForm()">
-        <label for="send-destination">Destination:</label><input id="send-destination" name="destination" type="text"/>
-        <label for="send-message">Message:</label><input id="send-message" name="message" type="text"/>
-        <button type="submit">Send</button>
+        <div class="form-group">
+            <label for="send-destination" class="text-light">Destination:</label>
+            <select id="send-destination" name="destination" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <label for="send-message" class="text-light">Message:</label>
+            <textarea id="send-message" name="message" type="text" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
     </form>
 
 </div>

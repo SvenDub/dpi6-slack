@@ -1,8 +1,8 @@
 package nl.svendubbeld.fontys.slack.server
 
-import nl.svendubbeld.fontys.slack.server.repository.GroupRepository
-import nl.svendubbeld.fontys.slack.server.repository.UserRepository
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
+import nl.svendubbeld.fontys.slack.shared.repository.GroupRepository
+import nl.svendubbeld.fontys.slack.shared.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessageListener

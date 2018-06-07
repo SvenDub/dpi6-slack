@@ -4,7 +4,6 @@ import nl.svendubbeld.fontys.slack.client.amqp.Receiver
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_QUEUE
 import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
-import nl.svendubbeld.fontys.slack.shared.SEND_QUEUE
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Queue
@@ -18,9 +17,6 @@ import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class Application(val slackConfiguration: SlackConfiguration) {
-
-    @Bean
-    fun sendQueue(): Queue = Queue(SEND_QUEUE)
 
     @Bean
     fun receiveQueue(): Queue = Queue("$RECEIVE_QUEUE.${slackConfiguration.user}")
