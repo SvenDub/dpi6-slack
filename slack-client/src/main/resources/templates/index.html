@@ -17,25 +17,12 @@
 <div class="container mt-2">
     <h1 class="text-light">Messages</h1>
 
-    <div id="messages">
-        <!--/*@thymesVar id="messages" type="java.util.List<nl.svendubbeld.fontys.slack.shared.Message>"*/-->
-        <!--<div class="message message&#45;&#45;received" th:each="message : ${messages}">
-            <div th:text="${message.content}" class="message__content"></div>
-            <div th:data-livestamp="${message.date}" class="message__timestamp">&nbsp;</div>
-        </div>-->
+    <div class="row">
+        <div class="nav flex-column nav-pills col-md-3" id="messages-destination" role="tablist" aria-orientation="vertical">
+        </div>
+        <div class="tab-content col-md-9" id="messages-content">
+        </div>
     </div>
-
-    <form onsubmit="return onSubmitMessageForm()">
-        <div class="form-group">
-            <label for="send-destination" class="text-light">Destination:</label>
-            <select id="send-destination" name="destination" class="form-control"></select>
-        </div>
-        <div class="form-group">
-            <label for="send-message" class="text-light">Message:</label>
-            <textarea id="send-message" name="message" type="text" class="form-control"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Send</button>
-    </form>
 
 </div>
 
@@ -55,6 +42,25 @@
     </div>
 </script>
 
+<script id="messages-nav-template" type="text/x-handlebars-template">
+    <a class="nav-link" id="messages-destination-{{type}}-{{key}}-tab" data-toggle="pill" href="#messages-destination-{{type}}-{{key}}"
+       role="tab" aria-controls="messages-destination-{{type}}-{{key}}" aria-selected="true">{{name}}</a>
+</script>
+
+<script id="messages-content-template" type="text/x-handlebars-template">
+    <div class="tab-pane" id="messages-destination-{{type}}-{{key}}" role="tabpanel"
+         aria-labelledby="messages-destination-{{type}}-{{key}}-tab" data-key="{{type}}.{{key}}">
+        <div class="messages"></div>
+        <form onsubmit="return onSubmitMessageForm('#messages-destination-{{type}}-{{key}}-message', '{{type}}.{{key}}')">
+            <div class="form-group">
+                <label for="messages-destination-{{type}}-{{key}}-message" class="text-light">Message:</label>
+                <input id="messages-destination-{{type}}-{{key}}-message" name="message" type="text" class="form-control" autocomplete="off" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</script>
+
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
@@ -63,6 +69,11 @@
 <script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
 <script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
 <script th:src="@{/webjars/handlebars/handlebars.min.js}"></script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const user = /*[[${user}]]*/ '';
+  /*]]>*/
+</script>
 <script th:src="@{/js/app.js}"></script>
 </body>
 </html>

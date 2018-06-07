@@ -17,6 +17,6 @@ class Startup(private val userRepository: UserRepository, private val groupRepos
         ))
 
         userRepository.save(User("Sven Dubbeld", "svendub", groups.toList()))
-        userRepository.save(User("Other", "other", listOf(groups.first())))
+        userRepository.save(User("Daan Tuller", "daantul", listOf(groups.first())))
     }
 }

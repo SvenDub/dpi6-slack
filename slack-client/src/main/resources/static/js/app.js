@@ -1,15 +1,16 @@
 let stompClient = null;
 let messageTemplate = null;
+let messagesNavTemplate = null;
+let messagesContentTemplate = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  messageTemplate = Handlebars.compile(document.getElementById("message-template").innerHTML);
-
-  const messagesEl = document.querySelector('#messages');
-  messagesEl.scrollTop = messagesEl.scrollHeight - messagesEl.offsetHeight;
+  messageTemplate = Handlebars.compile(document.getElementById('message-template').innerHTML);
+  messagesNavTemplate = Handlebars.compile(document.getElementById('messages-nav-template').innerHTML);
+  messagesContentTemplate = Handlebars.compile(document.getElementById('messages-content-template').innerHTML);
 
   connect();
 
-  loadGroups();
+  loadDestinations();
 });
 
 function connect() {
@@ -30,8 +31,10 @@ function disconnect() {
   console.log('Disconnected');
 }
 
-function onSubmitMessageForm() {
-  sendMessage({content: document.querySelector('#send-message').value}, document.querySelector('#send-destination').value);
+function onSubmitMessageForm(messageSelector, destination) {
+  let message = document.querySelector(messageSelector);
+  sendMessage({content: message.value}, destination);
+  message.value = '';
   return false;
 }
 
@@ -40,7 +43,25 @@ function sendMessage(message, destination) {
 }
 
 function addMessage(message) {
-  const messagesEl = document.querySelector('#messages');
+  let messagesEl = null;
+
+  if (message.message.destination.startsWith('group.')) {
+    messagesEl = document.querySelector(`[data-key="${message.message.destination}"]`);
+  } else if (message.message.destination.startsWith('user.')) {
+    if (message.type === 'sent') {
+      messagesEl = document.querySelector(`[data-key="${message.message.destination}"]`);
+    } else if (message.type === 'received') {
+      messagesEl = document.querySelector(`[data-key="user.${message.message.sender}"]`);
+    } else {
+      console.error('Message type not understood', message);
+      return;
+    }
+  } else {
+    console.error('Destination not found for message', message);
+    return;
+  }
+
+  messagesEl = messagesEl.firstElementChild;
 
   const scrolledToBottom = messagesEl.scrollTop >=
     (messagesEl.scrollHeight - messagesEl.offsetHeight - 8);
@@ -57,18 +78,21 @@ function addMessage(message) {
   }
 }
 
-function loadGroups() {
-  const groupsEl = document.querySelector('#send-destination');
+function loadDestinations() {
+  const destinationsNavEl = document.querySelector('#messages-destination');
+  const destinationsContentEl = document.querySelector('#messages-content');
 
   fetch('/api/destinations')
     .then(resp => resp.json())
     .then(destinations => {
-      destinations.forEach(destination => {
-        const groupEl = document.createElement('option');
-        groupEl.value = `${destination.type}.${destination.key}`;
-        groupEl.innerText = `${destination.type}: ${destination.name}`;
+      destinations
+        .filter(destination => destination.key !== user)
+        .forEach(destination => {
+        const navElement = htmlToElement(messagesNavTemplate(destination));
+        destinationsNavEl.appendChild(navElement);
 
-        groupsEl.appendChild(groupEl);
+        const contentElement = htmlToElement(messagesContentTemplate(destination));
+        destinationsContentEl.appendChild(contentElement);
       })
     });
 }
