@@ -29,13 +29,11 @@
 <script id="message-template" type="text/x-handlebars-template">
     <div class="message-container message-container--{{type}}">
         <div class="message message--{{type}}">
+            <div class="message__sender">
+                {{message.sender}}
+            </div>
             <div class="message__content">
-                <div>
-                    {{message.sender}} => {{message.destination}}
-                </div>
-                <div>
-                    {{message.content}}
-                </div>
+                {{message.content}}
             </div>
             <div class="message__timestamp" data-livestamp="{{message.date}}">&nbsp;</div>
         </div>

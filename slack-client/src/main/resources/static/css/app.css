@@ -41,4 +41,10 @@
 
 .message__timestamp {
     font-size: small;
+    font-style: italic;
+}
+
+.message__sender {
+    font-size: small;
+    font-style: italic;
 }
