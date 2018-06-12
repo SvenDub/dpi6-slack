@@ -27,18 +27,21 @@ class MessageRouter(
                 logger.info("Routing to $routingKey")
 
                 messageSender.sendMessage(routingKey, message)
+
+                val returnRoutingKey = "user.${message.sender}.user.${it.key}"
+                logger.info("Routing return message to $returnRoutingKey")
+
+                messageSender.sendMessage(returnRoutingKey, message)
             }
         } else if (destination.startsWith("group.")) {
             logger.info("Found routing key for group $destination")
             groupRepository.findByKey(destination.substringAfter("group."))?.let {
                 logger.info("Found group ${it.name} (${it.key})")
                 it.users.forEach {
-                    if (it.key != message.sender) {
-                        val routingKey = "user.${it.key}.${message.destination}"
-                        logger.info("Routing to $routingKey")
+                    val routingKey = "user.${it.key}.${message.destination}"
+                    logger.info("Routing to $routingKey")
 
-                        messageSender.sendMessage(routingKey, message)
-                    }
+                    messageSender.sendMessage(routingKey, message)
                 }
             }
         }

@@ -17,11 +17,13 @@ class MessageListener(private val messageRouter: MessageRouter, @MessageProcesso
 
     @Transactional
     override fun onMessage(message: Message) {
+        var processedMessage: Message? = null
+
         processors
                 .filter { it::class.java.isAnnotationPresent(MessageProcessor::class.java) }
-                .sortedBy { it::class.java.getAnnotation(Order::class.java)?.value ?: MESSAGE_ORDER_DEFAULT}
-                .forEach { it.process(message) }
+                .sortedByDescending { it::class.java.getAnnotation(Order::class.java)?.value ?: MESSAGE_ORDER_DEFAULT}
+                .forEach { processedMessage = it.process(processedMessage ?: message) }
 
-        messageRouter.routeMessage(message)
+        messageRouter.routeMessage(processedMessage ?: message)
     }
 }
