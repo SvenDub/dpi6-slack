@@ -1,27 +1,22 @@
-package nl.svendubbeld.fontys.slack.server
+package nl.svendubbeld.fontys.slack.server.messaging
 
-import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.repository.GroupRepository
 import nl.svendubbeld.fontys.slack.shared.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
-import org.springframework.amqp.core.MessageListener
-import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
 @Component
-class MessageListener(
+class MessageRouter(
         private val messageConverter: MessageConverter,
-        private val rabbitTemplate: RabbitTemplate,
         private val userRepository: UserRepository,
-        private val groupRepository: GroupRepository) : MessageListener {
+        private val groupRepository: GroupRepository,
+        private val messageSender: MessageSender) {
 
-    private val logger = LoggerFactory.getLogger(MessageListener::class.java)
+    private val logger = LoggerFactory.getLogger(MessageRouter::class.java)
 
-    @Transactional
-    override fun onMessage(it: Message) {
+    fun routeMessage(it: Message) {
         val message = messageConverter.fromMessage(it) as nl.svendubbeld.fontys.slack.shared.Message
         val destination = it.messageProperties.receivedRoutingKey
 
@@ -30,7 +25,8 @@ class MessageListener(
             userRepository.findByKey(destination.substringAfter("user."))?.let {
                 val routingKey = "user.${it.key}.user.${message.sender}"
                 logger.info("Routing to $routingKey")
-                rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, routingKey, message)
+
+                messageSender.sendMessage(routingKey, message)
             }
         } else if (destination.startsWith("group.")) {
             logger.info("Found routing key for group $destination")
@@ -40,7 +36,8 @@ class MessageListener(
                     if (it.key != message.sender) {
                         val routingKey = "user.${it.key}.${message.destination}"
                         logger.info("Routing to $routingKey")
-                        rabbitTemplate.convertAndSend(RECEIVE_EXCHANGE, routingKey, message)
+
+                        messageSender.sendMessage(routingKey, message)
                     }
                 }
             }

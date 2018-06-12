@@ -1,5 +1,8 @@
 package nl.svendubbeld.fontys.slack.server
 
+import nl.svendubbeld.fontys.slack.server.messaging.MessageListener
+import nl.svendubbeld.fontys.slack.server.processor.MessageProcessor
+import nl.svendubbeld.fontys.slack.server.processor.Processor
 import nl.svendubbeld.fontys.slack.shared.LoadEntities
 import nl.svendubbeld.fontys.slack.shared.RECEIVE_EXCHANGE
 import nl.svendubbeld.fontys.slack.shared.SEND_EXCHANGE
@@ -14,6 +17,7 @@ import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.amqp.support.converter.SimpleMessageConverter
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
