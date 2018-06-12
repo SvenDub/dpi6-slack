@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+
 .messages {
     height: 500px;
     overflow-y: scroll;
@@ -47,4 +49,9 @@
 .message__sender {
     font-size: small;
     font-style: italic;
+}
+
+.message__content {
+    white-space: pre-wrap;
+    font-family: 'Roboto Mono', monospace;
 }
