@@ -1,6 +1,8 @@
 package nl.svendubbeld.fontys.slack.client.ws
 
-import nl.svendubbeld.fontys.slack.client.*
+import nl.svendubbeld.fontys.slack.client.MessageReceivedEvent
+import nl.svendubbeld.fontys.slack.client.MessageService
+import nl.svendubbeld.fontys.slack.client.SlackConfiguration
 import nl.svendubbeld.fontys.slack.shared.Message
 import org.slf4j.LoggerFactory
 import org.springframework.context.event.EventListener
@@ -25,8 +27,8 @@ class WebSocketController(val template: SimpMessagingTemplate, val messageServic
 
     @EventListener
     fun onMessageReceived(event: MessageReceivedEvent) {
-        logger.info("Received <${event.message.content}>")
+        logger.info("Received <${event.localMessage.message}>")
 
-        template.convertAndSend("/topic/messages", LocalMessage(event.message, if (event.message.sender == slackConfiguration.user) MessageType.SENT else MessageType.RECEIVED))
+        template.convertAndSend("/topic/messages", event.localMessage)
     }
 }

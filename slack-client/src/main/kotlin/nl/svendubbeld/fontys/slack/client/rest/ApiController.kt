@@ -1,6 +1,8 @@
 package nl.svendubbeld.fontys.slack.client.rest
 
+import nl.svendubbeld.fontys.slack.client.LocalMessage
 import nl.svendubbeld.fontys.slack.client.SlackConfiguration
+import nl.svendubbeld.fontys.slack.client.repository.LocalMessageRepository
 import nl.svendubbeld.fontys.slack.shared.entity.Destination
 import nl.svendubbeld.fontys.slack.shared.entity.Group
 import nl.svendubbeld.fontys.slack.shared.entity.User
@@ -14,7 +16,7 @@ import org.springframework.web.client.RestTemplate
 
 @RestController
 @RequestMapping("/api")
-class ApiController(private val slackConfiguration: SlackConfiguration) {
+class ApiController(private val slackConfiguration: SlackConfiguration, private var repository: LocalMessageRepository) {
 
     @GetMapping("/destinations")
     fun getGroups(): ResponseEntity<List<Destination>> {
@@ -23,6 +25,11 @@ class ApiController(private val slackConfiguration: SlackConfiguration) {
         val usersResponse = restTemplate.exchange("http://localhost:8080/api/user", HttpMethod.GET, null, typeRef<List<User>>())
 
         return ResponseEntity.ok(listOfNotNull(groupsResponse.body, usersResponse.body).flatten())
+    }
+
+    @GetMapping("/messages")
+    fun getMessages(): ResponseEntity<Iterable<LocalMessage>> {
+        return ResponseEntity.ok(repository.findAll())
     }
 
 }

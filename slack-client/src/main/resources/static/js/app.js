@@ -132,6 +132,15 @@ function loadDestinations() {
           i++;
         }
       }
+    })
+    .then(() => loadMessages());
+}
+
+function loadMessages() {
+  fetch('/api/messages')
+    .then(resp => resp.json())
+    .then(resp => {
+      resp.forEach(message => addMessage(message));
     });
 }
 

@@ -2,3 +2,12 @@ server:
   port: 8081
 slack:
   user: svendub
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:~/Fontys/DPI6/slack-db/${slack.user}
+  jpa:
+    hibernate:
+      ddl-auto: update
