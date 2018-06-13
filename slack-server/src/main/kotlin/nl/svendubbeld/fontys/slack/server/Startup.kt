@@ -18,5 +18,6 @@ class Startup(private val userRepository: UserRepository, private val groupRepos
 
         userRepository.save(User("Sven Dubbeld", "svendub", groups.toList()))
         userRepository.save(User("Daan Tuller", "daantul", listOf(groups.first())))
+        userRepository.save(User("Tobi van Bronswijk", "sternold", groups.toList()))
     }
 }
