@@ -133,6 +133,15 @@ function loadDestinations() {
         }
       }
     })
+    .then(() => {
+      const hash = window.location.hash;
+      hash && $('#messages-destination a[href="' + hash + '"]').tab('show');
+
+      $('#messages-destination a').click(function() {
+        $(this).tab('show');
+        window.location.hash = this.hash;
+      });
+    })
     .then(() => loadMessages());
 }
 
